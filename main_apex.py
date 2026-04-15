@@ -1,24 +1,25 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from PIL import Image
 import os
 
+# 🔐 API KEY
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not API_KEY:
-    st.error("❌ API Key not found!")
+    st.error("❌ API Key not found! Please set GOOGLE_API_KEY in Secrets.")
     st.stop()
 
-genai.configure(api_key=API_KEY, transport="rest")
+# 🔧 Client setup
+client = genai.Client(api_key=API_KEY)
 
-# Model
-model = genai.GenerativeModel('gemini-1.5-flash')
-# UI
+# 🎨 UI
 st.set_page_config(page_title="ApexGuard AI", layout="centered")
 
 st.title("🛡️ ApexGuard AI")
 st.subheader("🚨 Advanced Deepfake Detection System")
 
+# 📤 Upload image
 uploaded_file = st.file_uploader("📤 Upload Image", type=['jpg', 'jpeg', 'png'])
 
 if uploaded_file is not None:
@@ -29,7 +30,7 @@ if uploaded_file is not None:
         prompt = """
         You are an expert AI in deepfake detection.
 
-        Analyze this image carefully for:
+        Analyze this image for:
         - Face distortion
         - Lighting mismatch
         - Skin texture issues
@@ -42,11 +43,16 @@ if uploaded_file is not None:
         """
 
         with st.spinner("🔍 Scanning with AI Engine..."):
-            response = model.generate_content([prompt, img])
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=[prompt, img]
+            )
 
         result = response.text
 
-        # 🎯 Extract score
+        st.success("✅ Analysis Complete")
+
+        # 📊 Score निकालने की कोशिश
         score = 50
         for line in result.split("\n"):
             if "Score" in line:
@@ -55,13 +61,9 @@ if uploaded_file is not None:
                 except:
                     pass
 
-        st.success("✅ Analysis Complete")
-
-        # 📊 Score bar
         st.markdown("### 📊 Confidence Score")
         st.progress(score)
 
-        # 🚨 Verdict UI
         if score > 70:
             st.error("🚨 High Risk: Deepfake Detected")
         elif score > 40:
@@ -69,24 +71,18 @@ if uploaded_file is not None:
         else:
             st.success("✅ Likely Real Image")
 
-        # 🧠 Detailed Output
-        st.markdown("### 🧠 AI Analysis")
+        st.markdown("### 🧠 Detailed Analysis")
         st.write(result)
 
         # 📄 Report download
         report = f"""
-        ApexGuard AI Report
-        -----------------------
-        Score: {score}
+ApexGuard AI Report
+-----------------------
+Score: {score}
 
-        {result}
-        """
-
-        st.download_button(
-            label="📥 Download Report",
-            data=report,
-            file_name="deepfake_report.txt"
-        )
+{result}
+"""
+        st.download_button("📥 Download Report", report, file_name="report.txt")
 
     except Exception as e:
         st.error(f"❌ Error: {e}")
