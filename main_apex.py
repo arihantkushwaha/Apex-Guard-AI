@@ -19,43 +19,31 @@ st.set_page_config(page_title="ApexGuard AI", layout="centered")
 st.title("🛡️ ApexGuard AI")
 st.subheader("🔍 Deepfake Detection System")
 
-# 📤 Upload Image
+# 📤 Upload
 uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     try:
-        # 📷 Open Image
         img = Image.open(uploaded_file)
         st.image(img, caption="📷 Uploaded Image", use_container_width=True)
 
-        # 🧠 Prompt
         prompt = """
-        You are an expert AI in deepfake detection.
+        Analyze this image and detect if it is deepfake.
 
-        Analyze this image for:
-        - Face distortion
-        - Lighting mismatch
-        - Skin texture issues
-        - Background inconsistencies
-
-        Give output:
-        Deepfake Score (0-100)
-        Verdict (Real / Suspicious / Fake)
-        Reason
+        Give:
+        - Score (0-100)
+        - Verdict (Real / Fake)
+        - Reason
         """
 
-        # 🚀 AI Call (FIXED)
-        with st.spinner("🧠 Scanning with AI Engine..."):
+        with st.spinner("🧠 Scanning..."):
             response = client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=[prompt, img]   # ✅ IMPORTANT FIX
+                model="gemini-1.0-pro-vision",   # ✅ STABLE MODEL (IMPORTANT)
+                contents=[prompt, img]
             )
 
-        result = response.text
-
-        # ✅ Output
-        st.success("✅ Analysis Complete!")
-        st.write(result)
+        st.success("✅ Done")
+        st.write(response.text)
 
     except Exception as e:
         st.error(f"❌ Error: {e}")
