@@ -19,11 +19,12 @@ st.set_page_config(page_title="ApexGuard AI", layout="centered")
 st.title("🛡️ ApexGuard AI")
 st.subheader("🔍 Deepfake Detection System")
 
-# 📤 Upload
+# 📤 Upload Image
 uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     try:
+        # 📷 Open Image
         img = Image.open(uploaded_file)
         st.image(img, caption="📷 Uploaded Image", use_container_width=True)
 
@@ -43,20 +44,11 @@ if uploaded_file is not None:
         Reason
         """
 
-        # 📦 Image bytes
-        image_bytes = uploaded_file.getvalue()
-
-        # 🚀 AI Call
+        # 🚀 AI Call (FIXED)
         with st.spinner("🧠 Scanning with AI Engine..."):
             response = client.models.generate_content(
                 model="gemini-1.5-flash",
-                contents=[
-                    prompt,
-                    {
-                        "mime_type": uploaded_file.type,
-                        "data": image_bytes
-                    }
-                ]
+                contents=[prompt, img]   # ✅ IMPORTANT FIX
             )
 
         result = response.text
