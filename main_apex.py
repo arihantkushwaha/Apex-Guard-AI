@@ -9,10 +9,10 @@ if not API_KEY:
     st.error("❌ API Key not found!")
     st.stop()
 
-genai.configure(api_key=API_KEY)
+genai.configure(api_key=API_KEY, transport="rest")
 
 # Model
-model = genai.GenerativeModel('gemini-1.5-pro-latest')
+model = genai.GenerativeModel('gemini-1.5-flash')
 # UI
 st.set_page_config(page_title="ApexGuard AI", layout="centered")
 
