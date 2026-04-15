@@ -3,14 +3,12 @@ from google import genai
 from PIL import Image
 import os
 
-# 🔐 API KEY
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not API_KEY:
     st.error("❌ API Key not found! Please set GOOGLE_API_KEY in Secrets.")
     st.stop()
 
-# 🔧 Client setup
 client = genai.Client(api_key=API_KEY)
 
 # 🎨 UI
