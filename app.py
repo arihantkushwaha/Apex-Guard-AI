@@ -6,7 +6,7 @@ GOOGLE_API_KEY = "AIzaSyDnVFu-OtG5_fCElU-MrsTI-OgVBUKbHBk"
 
 genai.configure(api_key=GOOGLE_API_KEY)
 # यहाँ हमने मॉडल का नाम अपडेट किया है ताकि 404 एरर न आए
-model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- Step 2: Website UI ---
 st.set_page_config(page_title="The Apex AI - Deepfake Guard", page_icon="🛡️")
