@@ -12,8 +12,7 @@ if not API_KEY:
 genai.configure(api_key=API_KEY)
 
 # Model
-model = genai.GenerativeModel('gemini-1.5-flash')
-
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 # UI
 st.set_page_config(page_title="ApexGuard AI", layout="centered")
 
