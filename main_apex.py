@@ -3,11 +3,11 @@ import google.generativeai as genai
 from PIL import Image
 import os
 
-# 🔐 API Key (Option 1: Direct use - only for testing, GitHub पर मत डालना)
-API_KEY = "YOUR_API_KEY_HERE"
+API_KEY = os.getenv("GOOGLE_API_KEY")
 
-# 👉 Best (recommended):
-# API_KEY = os.getenv("GOOGLE_API_KEY")
+if not API_KEY:
+    st.error("❌ API Key not found!")
+    st.stop()
 
 genai.configure(api_key=API_KEY)
 
