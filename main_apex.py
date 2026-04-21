@@ -1,51 +1,54 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 from PIL import Image
-import os
 
-# 🔐 API KEY
-API_KEY = os.getenv("GOOGLE_API_KEY")
+# --- Step 1: Configuration ---
+# Your New API Key
+API_KEY = "AIzaSyDfklMZIOviUu6HR2TVB1EhDBBtMQolwBo"
 
-if not API_KEY:
-    st.error("❌ API Key not found! Please set GOOGLE_API_KEY in Secrets.")
-    st.stop()
+# transport='rest' ensures we use the most stable connection
+genai.configure(api_key=API_KEY, transport='rest')
 
-# 🤖 Client
-client = genai.Client(api_key=API_KEY)
+# Force-loading the stable flash model
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# 🎨 UI
-st.set_page_config(page_title="ApexGuard AI", layout="centered")
+# --- Step 2: UI Design ---
+st.set_page_config(page_title="The Apex AI", page_icon="🛡️")
 
 st.title("🛡️ ApexGuard AI")
-st.subheader("🔍 Deepfake Detection System")
+st.subheader("Deepfake & AI Fraud Detection")
+st.write("Detecting synthetic media using Google Gemini AI.")
 
-# 📤 Upload
-uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
+# Sidebar for language
+language = st.sidebar.selectbox("Language / भाषा", ["English", "Hindi"])
+
+# File Uploader
+uploaded_file = st.file_uploader("Upload an Image", type=['jpg', 'jpeg', 'png'])
 
 if uploaded_file is not None:
+    st.info("🔄 Scanning media... please wait.")
+    
     try:
+        # Process image with PIL
         img = Image.open(uploaded_file)
-        st.image(img, caption="📷 Uploaded Image", use_container_width=True)
+        st.image(img, caption='Uploaded Image', use_container_width=True)
+        
+        # Expert Analysis
+        if language == "English":
+            prompt = "Is this image a deepfake or AI-generated? Give a safety score 0-100 and brief reasons."
+        else:
+            prompt = "क्या यह इमेज डीपफेक या AI जनरेटेड है? 0-100 के बीच सेफ्टी स्कोर और कारण बताएं।"
 
-        prompt = """
-        Analyze this image and detect if it is deepfake.
-
-        Give:
-        - Score (0-100)
-        - Verdict (Real / Fake)
-        - Reason
-        """
-
-        with st.spinner("🧠 Scanning..."):
-            response = client.models.generate_content(
-                model="gemini-1.0-pro-vision",   # ✅ STABLE MODEL (IMPORTANT)
-                contents=[prompt, img]
-            )
-
-        st.success("✅ Done")
+        # Generating Content
+        response = model.generate_content([prompt, img])
+        
+        st.success("✅ Analysis Complete!")
+        st.markdown("### 📊 Apex Report:")
         st.write(response.text)
-
+        
     except Exception as e:
-        st.error(f"❌ Error: {e}")
+        st.error(f"System Error: {e}")
+        st.info("Please Reboot the app from 'Manage App' settings if error persists.")
 
-st.caption("⚡ Developed by Team The Apex AI")
+st.divider()
+st.caption("Developed by Team The Apex AI | Solution Challenge 2026")
